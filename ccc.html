@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Car Color Changer</title>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            transition: background-color 0.5s;
+        }
+
+        #car {
+            width: 300px;
+            height: 150px;
+            background-color: #3498db;
+            border-radius: 10px;
+            position: relative;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+            transition: background-color 0.5s;
+            cursor: pointer;
+        }
+
+        #car::before {
+            content: '';
+            position: absolute;
+            top: -40px;
+            left: 50px;
+            width: 200px;
+            height: 80px;
+            background-color: inherit;
+            border-radius: 50px 50px 0 0;
+        }
+
+        .wheel {
+            position: absolute;
+            bottom: -20px;
+            width: 50px;
+            height: 50px;
+            background-color: #333;
+            border-radius: 50%;
+        }
+
+        .wheel::after {
+            content: '';
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background-color: #666;
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+        }
+
+        .wheel.left {
+            left: 30px;
+        }
+
+        .wheel.right {
+            right: 30px;
+        }
+
+        #info {
+            margin-top: 20px;
+            font-size: 18px;
+        }
+
+        #history {
+            margin-top: 30px;
+            font-size: 16px;
+        }
+
+        #history ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        #history li {
+            background: #fff;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        #mood-picker {
+            margin-top: 20px;
+        }
+
+        #mood-picker label {
+            margin-right: 10px;
+            font-size: 16px;
+        }
+
+        #fun-fact {
+            margin-top: 20px;
+            font-size: 16px;
+            font-style: italic;
+            text-align: center;
+            max-width: 400px;
+        }
+    </style>
+</head>
+<body>
+    <div id="car">
+        <div class="wheel left"></div>
+        <div class="wheel right"></div>
+    </div>
+    <div id="info">Current Color: <span id="current-color">#3498db</span></div>
+    <div id="history">
+        <strong>Color History:</strong>
+        <ul id="color-history">
+            <li>#3498db</li>
+        </ul>
+    </div>
+
+    <div id="mood-picker">
+        <label for="mood">Select a Mood:</label>
+        <select id="mood">
+            <option value="calm">Calm</option>
+            <option value="energetic">Energetic</option>
+            <option value="playful">Playful</option>
+        </select>
+        <button id="apply-mood">Apply Mood</button>
+    </div>
+
+    <div id="fun-fact">Fun Fact: Did you know that white is the most popular car color globally?</div>
+
+    <script>
+        const car = document.getElementById('car');
+        const currentColorSpan = document.getElementById('current-color');
+        const historyList = document.getElementById('color-history');
+        const moodPicker = document.getElementById('mood');
+        const applyMoodButton = document.getElementById('apply-mood');
+        const funFactDiv = document.getElementById('fun-fact');
+
+        const moodColors = {
+            calm: ['#3498db', '#85c1e9', '#2e86c1'],
+            energetic: ['#e74c3c', '#e67e22', '#f1c40f'],
+            playful: ['#9b59b6', '#e056fd', '#fd79a8']
+        };
+
+        const funFacts = [
+            "Did you know that white is the most popular car color globally?",
+            "Red cars are often associated with sporty and energetic drivers!",
+            "Black cars are known to be classic and luxurious but can get very hot in the sun.",
+            "Silver cars are considered to be the easiest to keep clean!",
+            "Blue cars are often linked to calm and trustworthy personalities."
+        ];
+
+        const getRandomColor = () => `#${Math.floor(Math.random() * 16777215).toString(16).padStart(6, '0')}`;
+
+        const getRandomFunFact = () => funFacts[Math.floor(Math.random() * funFacts.length)];
+
+        const updateHistory = (color) => {
+            const newHistoryItem = document.createElement('li');
+            newHistoryItem.textContent = color;
+            historyList.insertBefore(newHistoryItem, historyList.firstChild);
+
+            // Limit history to last 5 colors
+            if (historyList.childElementCount > 5) {
+                historyList.removeChild(historyList.lastChild);
+            }
+        };
+
+        const applyMood = (mood) => {
+            const colors = moodColors[mood];
+            if (colors) {
+                const randomMoodColor = colors[Math.floor(Math.random() * colors.length)];
+                car.style.backgroundColor = randomMoodColor;
+                document.body.style.backgroundColor = randomMoodColor;
+                currentColorSpan.textContent = randomMoodColor;
+                updateHistory(randomMoodColor);
+
+                // Update fun fact
+                funFactDiv.textContent = "Fun Fact: " + getRandomFunFact();
+            }
+        };
+
+        car.addEventListener('click', () => {
+            const newCarColor = getRandomColor();
+            const newBgColor = getRandomColor();
+
+            car.style.backgroundColor = newCarColor;
+            document.body.style.backgroundColor = newBgColor;
+
+            currentColorSpan.textContent = newCarColor;
+            updateHistory(newCarColor);
+
+            // Update fun fact
+            funFactDiv.textContent = "Fun Fact: " + getRandomFunFact();
+        });
+
+        applyMoodButton.addEventListener('click', () => {
+            const selectedMood = moodPicker.value;
+            applyMood(selectedMood);
+        });
+    </script>
+</body>
+</html>
